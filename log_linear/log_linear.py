@@ -3,6 +3,20 @@ import statsmodels.api as sm
 
 
 class LogLinear:
+    """Fit a linear model with loglinear variance
+
+    y ~ X@beta + sigma*eps
+    log(sigma2) ~ X_sigma@beta_sigma
+
+    The hope is to get smaller standard errors for beta by
+     modeling the heteroscedasticity.
+
+    See
+      H. Goldstein, Heteroscedasticity and complex variation
+      https://www.bristol.ac.uk/media-library/sites/cmm/migrated/documents/modelling-complex-variation.pdf
+    and references therein.
+    """
+
     def __init__(self, tolerance=1e-4, max_iterations=1000):
         self.tolerance = tolerance
         self.max_iterations = max_iterations
@@ -31,6 +45,9 @@ class LogLinear:
                 self.fit_ = fit
                 self.coef_ = fit.params
                 self.cov_ = fit.cov_params()
+                self.beta = fit.params
+                self.se_beta = np.diag(fit.cov_params())
+
                 return llf_trace
             llf_prev = fit.llf
             if params is None:
@@ -44,4 +61,5 @@ class LogLinear:
             mod_var = sm.OLS(log_eps2, X_sigma)
             fit_var = mod_var.fit()
             sigma2 = np.exp(fit_var.predict(X_sigma))
-        assert False, f"Reached self.max_iterations = {self.max_iterations} llf = {fit.llf} conv_check = {conv_check}"
+
+        assert False, f"Reached max_iterations = {self.max_iterations} llf = {fit.llf} conv_check = {conv_check}"

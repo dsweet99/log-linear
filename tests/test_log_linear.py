@@ -7,8 +7,7 @@ def test_log_linear():
     ll = LogLinear()
     lr = LinearRegression(fit_intercept=False)
 
-    # np.random.seed(17)
-
+    np.random.seed(17)
     n = 100
     k = 10
     k_sigma = 3
@@ -33,4 +32,5 @@ def test_log_linear():
     delta = np.array(delta)
     mu = delta.mean()
     se = delta.std() / np.sqrt(len(delta))
-    print(mu, mu / se)
+    t = mu / se
+    assert t < -2, (mu, se, t)
