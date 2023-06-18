@@ -1,0 +1,12 @@
+ignore = ['E501']
+# line-length = 160
+select = [
+    'E',
+    'F',
+    'W',
+    'I001',
+]
+
+exclude = [
+    "trash",
+]
